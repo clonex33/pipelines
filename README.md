@@ -49,6 +49,29 @@ To see and update the dependency requirements for your project use `requirements
 
 [Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
 
+## Pipeline Scheduling
+1. Open Task Scheduler (taskschd.msc).
+
+2. Click on "Create Basic Task..." or "Create Task..." in the right-hand panel.
+3. Follow the wizard to set up your task:
+
+- Name the task.
+
+  - Choose a trigger (e.g., daily, weekly).
+
+  - Specify the start date and time.
+
+  - Choose "Start a program" as the action.
+
+  - In the "Program/script" field, browse and select the path to cmd.exe (typically located at C:\Windows\System32\cmd.exe).
+
+  - In the "Add arguments (optional)" field, provide the following argument:
+
+      `/c "C:\Users\User\PycharmProjects\pythonProject\Malaysia\test\run_script.bat"
+  `
+
+  - Ensure that the path to run_script.bat is correct.
+
 ## How to work with Kedro and notebooks
 
 > Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `catalog`, `context`, `pipelines` and `session`.

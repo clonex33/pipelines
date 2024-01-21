@@ -1,0 +1,4 @@
+cd C:\Users\User\PycharmProjects\pythonProject\Malaysia\test
+C:\Users\User\anaconda3\Scripts\activate.bat Malaysia
+kedro run --pipeline blood_donation_trend
+kedro run --pipeline donator_retention

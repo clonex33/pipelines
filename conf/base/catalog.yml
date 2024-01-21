@@ -39,42 +39,40 @@
 # (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
 # https://docs.kedro.org/en/stable/data/data_catalog.html
 
-companies:
-  type: pandas.CSVDataset
-  filepath: data/01_raw/companies.csv
-
-reviews:
-  type: pandas.CSVDataset
-  filepath: data/01_raw/reviews.csv
-
-shuttles:
-  type: pandas.ExcelDataset
-  filepath: data/01_raw/shuttles.xlsx
-  load_args:
-    engine: openpyxl
-
-preprocessed_companies:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/preprocessed_companies.pq
-
-preprocessed_shuttles:
-  type: pandas.ParquetDataset
-  filepath: data/02_intermediate/preprocessed_shuttles.pq
-
-model_input_table:
-  type: pandas.ParquetDataset
-  filepath: data/03_primary/model_input_table.pq
-
-regressor:
-  type: pickle.PickleDataset
-  filepath: data/06_models/regressor.pickle
-  versioned: true
 
 
-daily_donation_raw:
+###########################
+#####--RAW DATA --#########
+###########################
+
+daily_donation_csv_raw:
   type: pandas.CSVDataset
   filepath: data/01_raw/donations_facility.csv
 
-yearly_donation_plot:
+blood_donators_retention_parquet:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/blood_donation_retention_2024.parquet
+
+###########################
+#####--OUTPUT DATA --#########
+###########################
+trend_scatter_plot:
   type: matplotlib.MatplotlibWriter
-  filepath: data/08_reporting/trend.png
+  filepath: data/08_reporting/scatter_trend_plot.png
+  overwrite: true
+
+trend_bar_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/bar_trend_plot.png
+  overwrite: true
+
+consecutive_Visits_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/consecutive_Visits_plot.png
+  overwrite: true
+
+number_of_return_visits:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/number_of_return_visits.png
+  overwrite: true
+
