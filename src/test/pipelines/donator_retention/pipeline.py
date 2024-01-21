@@ -8,7 +8,7 @@ from kedro.pipeline import Pipeline, pipeline
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import raw_data_parquet,Days_Between_Consecutive_Visits_plot,Average_Number_of_Return_Visits
+from .nodes import raw_data_parquet,donator_retention_plot
 
 
 
@@ -23,16 +23,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="data_parquet_ingestion",
             ),
             node(
-                func=Days_Between_Consecutive_Visits_plot,
+                func=donator_retention_plot,
                 inputs="data_proccesed",
                 outputs="consecutive_Visits_plot",
                 name="days_between_visit",
-            ),
-            node(
-                func=Average_Number_of_Return_Visits,
-                inputs="data_proccesed",
-                outputs="number_of_return_visits",
-                name="number_of_return",
             )
         ]
     )

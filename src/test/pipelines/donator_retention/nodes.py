@@ -18,34 +18,35 @@ def raw_data_parquet(daily_donation_raw: pd.DataFrame) -> pd.DataFrame:
 
     return daily_donation_raw
 
-def Average_Number_of_Return_Visits(data_proccesed: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for daily_donation_raw.
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import zscore
+
+def donator_retention_plot(data_processed: pd.DataFrame) -> None:
+    """Preprocesses the data, removes outliers, and creates subplots.
 
     Args:
-        daily_donation_raw: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
+        data_processed: Raw data.
     """
 
-    data_proccesed
-    # Assuming you have a DataFrame named data_proccesed with the provided data
-    # If not, you can create it using the data you provided
-
     # Convert 'visit_date' column to datetime
-    data_proccesed['visit_date'] = pd.to_datetime(data_proccesed['visit_date'])
+    data_processed['visit_date'] = pd.to_datetime(data_processed['visit_date'])
 
     # Calculate the time difference between consecutive visits for each donor
-    data_proccesed['time_diff'] = data_proccesed.groupby('donor_id')['visit_date'].diff()
+    data_processed['time_diff'] = data_processed.groupby('donor_id')['visit_date'].diff()
 
     # Calculate the mean time difference for each donor in days
-    mean_time_diff = data_proccesed.groupby('donor_id')['time_diff'].mean()
+    mean_time_diff = data_processed.groupby('donor_id')['time_diff'].mean()
 
     # Drop NaN values before calculating the overall mean time difference
     overall_mean_time_diff = mean_time_diff.dropna().mean()
-    data_proccesed
-    # Display the overall mean time difference
-    print(f"Overall Mean Time Difference: {overall_mean_time_diff.days} days")
+
+    # Remove outliers using z-score
+    z_scores = zscore(mean_time_diff.dropna().dt.days)  # Convert datetime to numeric values (days)
+    non_outliers_mask = (np.abs(z_scores) < 3)  # Adjust the threshold as needed
+    mean_time_diff_no_outliers = mean_time_diff.dropna()[non_outliers_mask]
 
     # Determine how well donors are retained based on the overall mean time difference
     desired_threshold = 60  # Set your desired threshold (in days)
@@ -54,54 +55,48 @@ def Average_Number_of_Return_Visits(data_proccesed: pd.DataFrame) -> pd.DataFram
     else:
         retention_status = "Blood donors need better retention."
 
-    # Create a plot for overall mean time difference
-    plt.figure(figsize=(10, 5))
-    mean_time_diff_in_days = mean_time_diff.dropna().dt.days
-    mean_time_diff_in_days.plot(kind='hist', bins=20, edgecolor='black', title='Distribution of Mean Time Differences')
-    plt.xlabel('Days Between Consecutive Visits')
-    plt.ylabel('Frequency')
+    # Create subplots
+    fig, axs = plt.subplots(1, 2, figsize=(15, 6))
 
-    # Annotate the plot with the retention status
-    plt.annotate(retention_status, xy=(0.5, 0.95), xycoords='axes fraction', ha='center', fontsize=12, color='red')
+    # Subplot 1: Distribution of Mean Time Differences without outliers
+    axs[0].hist(mean_time_diff_no_outliers.dt.days, bins=20, edgecolor='black')
+    axs[0].axvline(x=overall_mean_time_diff.days, color='red', linestyle='--', label='Average')
+    axs[0].text(overall_mean_time_diff.days + 2, 0.5, f'   Average: {round(overall_mean_time_diff.days)} days',
+                color='red', rotation='vertical')
+    axs[0].set_title(f'Distribution of Mean Time Differences')
+    axs[0].set_xlabel('Days Between Consecutive Visits')
+    axs[0].set_ylabel('Frequency')
 
-    return  plt
+    # Add legend
+    axs[0].legend()
 
-def Days_Between_Consecutive_Visits_plot(data_proccesed: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for daily_donation_raw.
+    # Subplot 2: Distribution of Return Visits
+    return_visits = data_processed.groupby('donor_id').size()
+    axs[1].hist(return_visits, bins=np.arange(0, 51, 1), edgecolor='black')
+    axs[1].set_title('Distribution of Return Visits')
+    axs[1].set_xlabel('Number of Return Visits')
+    axs[1].set_ylabel('Frequency')
+    axs[1].set_xticks(np.arange(0, 35, 5))
 
-    Args:
-        daily_donation_raw: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
-    """
+    # Add annotations for average return visits and retention status
+    axs[1].annotate(f'Average Return Visits: {return_visits.mean():.2f} times', xy=(0.5, 0.9),
+                    xycoords='axes fraction', ha='center', fontsize=12, color='red')
+
+    axs[1].annotate(retention_status, xy=(0.5, 0.85), xycoords='axes fraction', ha='center', fontsize=12,
+                    color='red')
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Add overall title
+    plt.suptitle('Combined Plot: Mean Time Differences and Return Visits (No Outliers)', fontsize=16, y=1.05)
+
+    # Show the plot
+    return plt
 
 
-    # Assuming you have a DataFrame named data_proccesed with the provided data
-    # If not, you can create it using the data you provided
-
-    # Create a plot for the number of return visits
-    return_visits = data_proccesed.groupby('donor_id').size()
-    plt.figure(figsize=(12, 6))
-
-    # Increase the number of bins for more detailed data
-    plt.hist(return_visits, bins=np.arange(0, 51, 1), edgecolor='black')
-
-    plt.title('Distribution of Return Visits')
-    plt.xlabel('Number of Return Visits')
-    plt.ylabel('Frequency')
-
-    # Set x-axis ticks up to 50 with intervals of 5
-    plt.xticks(np.arange(0, 51, 5))
-
-    # Calculate and annotate the average number of return visits
-    average_return_visits = return_visits.mean()
-    plt.annotate(f'Average Return Visits: {average_return_visits:.2f} times', xy=(0.5, 0.95), xycoords='axes fraction',
-                 ha='center', fontsize=12, color='red')
+# Example usage with a sample DataFrame
+# donator_retention_plot(your_data_processed_dataframe)
 
 
 
-    # Print the average number of return visits
-    print(f"Average Number of Return Visits: {average_return_visits:.2f}")
-
-    return  plt
