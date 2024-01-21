@@ -5,7 +5,7 @@ generated using Kedro 0.19.1
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import raw_data_csv, visualisation_scatter_plot,visualisation_bar_plot
+from .nodes import raw_data_csv, visualisation_scatter_plot_1,visualisation_scatter_plot_2
 
 ...
 
@@ -20,16 +20,16 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="raw_data_scatter_ingestion",
             ),
             node(
-                func=visualisation_scatter_plot,
+                func=visualisation_scatter_plot_1,
                 inputs="daily_donation_processed",
-                outputs="trend_scatter_plot",
-                name="trend_scatter_plot",
+                outputs="trend_scatter_plot_1",
+                name="trend_scatter_plot_1",
             ),
             node(
-                func=visualisation_bar_plot,
+                func=visualisation_scatter_plot_2,
                 inputs="daily_donation_processed",
-                outputs="trend_bar_plot",
-                name="trend_bar_plot",
+                outputs="trend_scatter_plot_2",
+                name="trend_scatter_plot_2",
             )
         ]
     )

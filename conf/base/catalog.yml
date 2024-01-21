@@ -56,9 +56,14 @@ blood_donators_retention_parquet:
 ###########################
 #####--OUTPUT DATA --#########
 ###########################
-trend_scatter_plot:
+trend_scatter_plot_1:
   type: matplotlib.MatplotlibWriter
-  filepath: data/08_reporting/scatter_trend_plot.png
+  filepath: data/08_reporting/scatter_trend_plot_1.png
+  overwrite: true
+
+trend_scatter_plot_2:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/scatter_trend_plot_2.png
   overwrite: true
 
 trend_bar_plot:
