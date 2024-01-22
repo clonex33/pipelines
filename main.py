@@ -12,19 +12,17 @@ async def send_photo(photo_path, chat_id, bot, caption=None):
 async def send_photos_to_chat():
     # Replace these paths with the actual paths to your local photo files
     photo_paths = [
-        'data\\08_reporting\\bar_trend_plot.png',
-        'data\\08_reporting\\scatter_trend_plot.png',
+        'data\\08_reporting\\scatter_trend_plot_1.png',
+        'data\\08_reporting\\scatter_trend_plot_2.png',
         'data\\08_reporting\\consecutive_Visits_plot.png',
-        'data\\08_reporting\\number_of_return_visits.png'
     ]
 
     chat_id = '-4179541564'  # Replace with the actual chat ID where you want to send the photos
 
     captions = [
-        "Hello! These are the latest blood donation trend plots for Whole Malaysia.",
-        "Hello! These are the latest blood donation trend plots across region.",
-        "Hello! These are the latest blood donator's return visit.",
-        "Hello! These are the latest blood donator's days before retuning."
+        "Hello! These are the latest blood donation trend plots for Borneo,Central & Central Region.",
+        "Hello! These are the latest blood donation trend plots for Pusat Darah negara ,Southern & Northern Region .",
+        "Hello! These are the stats for Donor's Retention."
     ]
 
     bot = Bot(token=TOKEN)

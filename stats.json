@@ -1,1 +1,1 @@
-{"daily_donation_csv_raw": {"rows": 144980, "columns": 19, "file_size": 10849123}, "daily_donation_processed": {"rows": 144980, "columns": 19}}
+{"blood_donators_retention_parquet": {"rows": 6231784, "columns": 3, "file_size": 15609209}, "data_proccesed": {"rows": 6231784, "columns": 3}}

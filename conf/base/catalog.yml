@@ -76,8 +76,5 @@ consecutive_Visits_plot:
   filepath: data/08_reporting/consecutive_Visits_plot.png
   overwrite: true
 
-number_of_return_visits:
-  type: matplotlib.MatplotlibWriter
-  filepath: data/08_reporting/number_of_return_visits.png
-  overwrite: true
+
 
