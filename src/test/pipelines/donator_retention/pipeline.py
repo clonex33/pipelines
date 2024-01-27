@@ -25,7 +25,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=donator_retention_plot,
                 inputs="data_proccesed",
-                outputs="consecutive_Visits_plot",
+                outputs=None,
                 name="days_between_visit",
             )
         ]

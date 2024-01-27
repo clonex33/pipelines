@@ -22,13 +22,13 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=visualisation_scatter_plot_1,
                 inputs="daily_donation_processed",
-                outputs="trend_scatter_plot_1",
+                outputs=None,
                 name="trend_scatter_plot_1",
             ),
             node(
                 func=visualisation_scatter_plot_2,
                 inputs="daily_donation_processed",
-                outputs="trend_scatter_plot_2",
+                outputs=None,
                 name="trend_scatter_plot_2",
             )
         ]

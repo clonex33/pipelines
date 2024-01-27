@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 """
 This is a boilerplate pipeline 'donator_retention'
@@ -19,84 +18,65 @@ def raw_data_parquet(daily_donation_raw: pd.DataFrame) -> pd.DataFrame:
     return daily_donation_raw
 
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.stats import zscore
+
+
+
 
 def donator_retention_plot(data_processed: pd.DataFrame) -> None:
-    """Preprocesses the data, removes outliers, and creates subplots.
 
-    Args:
-        data_processed: Raw data.
-    """
 
-    # Convert 'visit_date' column to datetime
-    data_processed['visit_date'] = pd.to_datetime(data_processed['visit_date'])
+    data_processed['generation'] = pd.cut(data_processed['birth_date'],
+    bins=[1900, 1964, 1980, 1996, 2100],labels=['Silent', 'Boomer', 'Gen X', 'Millennial'], right=False)
 
-    # Calculate the time difference between consecutive visits for each donor
-    data_processed['time_diff'] = data_processed.groupby('donor_id')['visit_date'].diff()
+    generation_counts = data_processed.groupby('generation').size().reset_index(name='count')
 
-    # Calculate the mean time difference for each donor in days
-    mean_time_diff = data_processed.groupby('donor_id')['time_diff'].mean()
+    legend_labels = {
+        'Silent': '1900-1964',
+        'Boomer': '1965-1980',
+        'Gen X': '1981-1996',
+        'Millennial': '1997&above'
+    }
 
-    # Drop NaN values before calculating the overall mean time difference
-    overall_mean_time_diff = mean_time_diff.dropna().mean()
+    # Create a bar chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.bar(generation_counts['generation'], generation_counts['count'],
+                  color=['skyblue', 'lightcoral', 'lightgreen', 'lightsalmon'], linewidth=0.7)
 
-    # Remove outliers using z-score
-    z_scores = zscore(mean_time_diff.dropna().dt.days)  # Convert datetime to numeric values (days)
-    non_outliers_mask = (np.abs(z_scores) < 3)  # Adjust the threshold as needed
-    mean_time_diff_no_outliers = mean_time_diff.dropna()[non_outliers_mask]
+    # Add labels and title
+    plt.title('Generational Impact: Blood Donation Trends in Malaysia')
+    plt.xlabel('Generation')
+    plt.ylabel('Total Donations')
 
-    # Determine how well donors are retained based on the overall mean time difference
-    desired_threshold = 60  # Set your desired threshold (in days)
-    if overall_mean_time_diff <= pd.Timedelta(days=desired_threshold):
-        retention_status = "Blood donors are being retained well."
-    else:
-        retention_status = "Blood donors need better retention."
+    # Set background color for the entire plot
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
 
-    # Create subplots
-    fig, axs = plt.subplots(1, 2, figsize=(15, 6))
+    # Format y-axis ticks without scientific notation
+    ax.ticklabel_format(style='plain', axis='y')
 
-    # Subplot 1: Distribution of Mean Time Differences without outliers
-    axs[0].hist(mean_time_diff_no_outliers.dt.days, bins=20, edgecolor='black')
-    axs[0].axvline(x=overall_mean_time_diff.days, color='red', linestyle='--', label='Average')
-    axs[0].text(overall_mean_time_diff.days + 2, 0.5, f'   Average: {round(overall_mean_time_diff.days)} days',
-                color='red', rotation='vertical')
-    axs[0].set_title(f'Distribution of Mean Time Differences')
-    axs[0].set_xlabel('Days Between Consecutive Visits')
-    axs[0].set_ylabel('Frequency')
+    # Annotate bars with count values
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, yval, int(yval), ha='center', va='bottom')
+
+    # Add background grid
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # Create legends for each age range
+    legends = [plt.Line2D([0], [0], marker='o', color='w', label=f'{label}: {legend_labels[label]}',
+                          markerfacecolor=color, markersize=10) for label, color in
+               zip(generation_counts['generation'], ['skyblue', 'lightcoral', 'lightgreen', 'lightsalmon'])]
 
     # Add legend
-    axs[0].legend()
+    plt.legend(handles=legends, title='Age Range', loc='upper left')
 
-    # Subplot 2: Distribution of Return Visits
-    return_visits = data_processed.groupby('donor_id').size()
-    axs[1].hist(return_visits, bins=np.arange(0, 51, 1), edgecolor='black')
-    axs[1].set_title('Distribution of Return Visits')
-    axs[1].set_xlabel('Number of Return Visits')
-    axs[1].set_ylabel('Frequency')
-    axs[1].set_xticks(np.arange(0, 35, 5))
-
-    # Add annotations for average return visits and retention status
-    axs[1].annotate(f'Average Return Visits: {return_visits.mean():.2f} times', xy=(0.5, 0.9),
-                    xycoords='axes fraction', ha='center', fontsize=12, color='red')
-
-    axs[1].annotate(retention_status, xy=(0.5, 0.85), xycoords='axes fraction', ha='center', fontsize=12,
-                    color='red')
-
-    # Adjust layout
+    # Save the plot
     plt.tight_layout()
+    plt.savefig('generation.png')
 
-    # Add overall title
-    plt.suptitle('Combined Plot: Mean Time Differences and Return Visits (No Outliers)', fontsize=16, y=1.05)
-
-    # Show the plot
     return plt
 
 
-# Example usage with a sample DataFrame
-# donator_retention_plot(your_data_processed_dataframe)
 
 
 
