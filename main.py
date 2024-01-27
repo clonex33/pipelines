@@ -12,8 +12,8 @@ async def send_photo(photo_path, chat_id, bot, caption=None):
 async def send_photos_to_chat():
     # Replace these paths with the actual paths to your local photo files
     photo_paths = [
-        'data\\08_reporting\\scatter_trend_plot_1.png',
-        'data\\08_reporting\\scatter_trend_plot_2.png',
+        'trends_1.png',
+        'trends_2.png',
         'data\\08_reporting\\consecutive_Visits_plot.png',
     ]
 

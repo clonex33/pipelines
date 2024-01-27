@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 
 def raw_data_csv(daily_donation_raw: pd.DataFrame) -> pd.DataFrame:
@@ -25,11 +26,7 @@ def raw_data_csv(daily_donation_raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def visualisation_scatter_plot_1(daily_donation_ingested_processed: pd.DataFrame) -> pd.DataFrame:
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import numpy as np
-    from sklearn.linear_model import LinearRegression
+
 
     # Assuming daily_donation_ingested_processed is your DataFrame
     # Replace this with your actual DataFrame
@@ -63,35 +60,36 @@ def visualisation_scatter_plot_1(daily_donation_ingested_processed: pd.DataFrame
 
     # Filter only East Coast, Central, and Borneo regions
     selected_regions = ['East Coast Region', 'Central Region', 'Borneo Region']
-    df_filtered = daily_donation_ingested_processed[daily_donation_ingested_processed['region'].isin(selected_regions)]
+    df_filtered = daily_donation_ingested_processed[
+        daily_donation_ingested_processed['region'].isin(selected_regions)].copy()
 
     # Convert the 'date' column to datetime format for proper sorting
-    df_filtered['date'] = pd.to_datetime(df_filtered['date'])
+    df_filtered['date'] = pd.to_datetime(df_filtered['date']).copy()
 
     # Extract quarter and year from the 'date' column
-    df_filtered['quarter'] = df_filtered['date'].dt.to_period("A")
+    df_filtered['quarter'] = df_filtered['date'].dt.to_period("A").copy()
 
     # Convert 'quarter' to string
-    df_filtered['quarter_str'] = df_filtered['quarter'].astype(str)
+    df_filtered['quarter_str'] = df_filtered['quarter'].astype(str).copy()
 
     # Group by 'quarter_str' and 'region' and sum the 'daily' column
     df_quarterly_sum = df_filtered.groupby(['quarter_str', 'region'])['daily'].sum().reset_index()
 
     # Create subplots for each region with increased gap
     fig, axes = plt.subplots(len(selected_regions), 1, figsize=(12, 6 * len(selected_regions)), sharex=True,
-                             gridspec_kw={'hspace':0.15})  # Adjust hspace as needed
+                             gridspec_kw={'hspace': 0.1}, facecolor='w')  # Adjust hspace as needed
 
     # Use seaborn color palette for better color distinction
     region_palette = sns.color_palette("husl", n_colors=len(df_quarterly_sum['region'].unique()))
 
     for i, region in enumerate(selected_regions):
-        region_data = df_quarterly_sum[df_quarterly_sum['region'] == region]
+        region_data = df_quarterly_sum[df_quarterly_sum['region'] == region].copy()
 
         # Exclude the last data point
-        region_data = region_data.iloc[:-1]
+        region_data = region_data.iloc[:-1].copy()
 
-        # Plot in the subplot
-        axes[i].plot(region_data['quarter_str'], region_data['daily'], label=region)
+        # Plot in the subplot with different color and dashed line
+        axes[i].plot(region_data['quarter_str'], region_data['daily'], label=region, color=region_palette[i])
 
         # Fit a linear regression model to get the trendline
         x = np.arange(len(region_data))
@@ -100,37 +98,35 @@ def visualisation_scatter_plot_1(daily_donation_ingested_processed: pd.DataFrame
         trendline = model.predict(x.reshape(-1, 1))
 
         # Plot the trendline
-        axes[i].plot(region_data['quarter_str'], trendline, linestyle='--', color='black', label='Trendline')
+        axes[i].plot(region_data['quarter_str'], trendline, linestyle='--', color='black')
 
         # Label y-axis for each subplot
         axes[i].set_ylabel(f'Sum of Daily Blood Donations')
 
-        # Add title for each subplot and reduce title size
-        axes[i].set_title(f'Total Annualy Blood Donation Trendline - {region}', fontsize=10)
+        # Add title for each subplot and increase title size
+        axes[i].set_title(f'Total Annual Blood Donation Trendline - {region}', fontsize=14)
+
+        # Add grid lines
+        axes[i].grid(True, linestyle='--', alpha=0.7)
 
     # Label x-axis for the last subplot
-    axes[-1].set_xlabel('Quarter', color='black')
+    axes[-1].set_xlabel('Annual-Time-Series', color='black')
 
     # Adjusting x-axis label rotation and font size
     plt.xticks(rotation=60, ha='right', fontsize=8)
 
-    # Show the legend
+    # Remove the legend
     for ax in axes:
-        ax.legend()
+        ax.legend().set_visible(False)
 
-    # Adjust spacing between x-axis labels and the plot
-    plt.tight_layout()
-
+    # Save the plot with tight layout
     # Show the plot
+    # Save the plot with tight layout
+    plt.savefig('trends_1.png', facecolor='w', bbox_inches='tight')
     return plt
 
 
 def visualisation_scatter_plot_2(daily_donation_ingested_processed: pd.DataFrame) -> pd.DataFrame:
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import numpy as np
-    from sklearn.linear_model import LinearRegression
 
     # Assuming daily_donation_ingested_processed is your DataFrame
     # Replace this with your actual DataFrame
@@ -164,35 +160,36 @@ def visualisation_scatter_plot_2(daily_donation_ingested_processed: pd.DataFrame
 
     # Filter only East Coast, Central, and Borneo regions
     selected_regions = ['National Region', 'Northern Region', 'Southern Region']
-    df_filtered = daily_donation_ingested_processed[daily_donation_ingested_processed['region'].isin(selected_regions)]
+    df_filtered = daily_donation_ingested_processed[
+        daily_donation_ingested_processed['region'].isin(selected_regions)].copy()
 
     # Convert the 'date' column to datetime format for proper sorting
-    df_filtered['date'] = pd.to_datetime(df_filtered['date'])
+    df_filtered['date'] = pd.to_datetime(df_filtered['date']).copy()
 
     # Extract quarter and year from the 'date' column
-    df_filtered['quarter'] = df_filtered['date'].dt.to_period("A")
+    df_filtered['quarter'] = df_filtered['date'].dt.to_period("A").copy()
 
     # Convert 'quarter' to string
-    df_filtered['quarter_str'] = df_filtered['quarter'].astype(str)
+    df_filtered['quarter_str'] = df_filtered['quarter'].astype(str).copy()
 
     # Group by 'quarter_str' and 'region' and sum the 'daily' column
     df_quarterly_sum = df_filtered.groupby(['quarter_str', 'region'])['daily'].sum().reset_index()
 
     # Create subplots for each region with increased gap
     fig, axes = plt.subplots(len(selected_regions), 1, figsize=(12, 6 * len(selected_regions)), sharex=True,
-                             gridspec_kw={'hspace':0.15})  # Adjust hspace as needed
+                             gridspec_kw={'hspace': 0.1}, facecolor='w')  # Adjust hspace as needed
 
     # Use seaborn color palette for better color distinction
     region_palette = sns.color_palette("husl", n_colors=len(df_quarterly_sum['region'].unique()))
 
     for i, region in enumerate(selected_regions):
-        region_data = df_quarterly_sum[df_quarterly_sum['region'] == region]
+        region_data = df_quarterly_sum[df_quarterly_sum['region'] == region].copy()
 
         # Exclude the last data point
-        region_data = region_data.iloc[:-1]
+        region_data = region_data.iloc[:-1].copy()
 
-        # Plot in the subplot
-        axes[i].plot(region_data['quarter_str'], region_data['daily'], label=region)
+        # Plot in the subplot with different color and dashed line
+        axes[i].plot(region_data['quarter_str'], region_data['daily'], label=region, color=region_palette[i])
 
         # Fit a linear regression model to get the trendline
         x = np.arange(len(region_data))
@@ -201,80 +198,30 @@ def visualisation_scatter_plot_2(daily_donation_ingested_processed: pd.DataFrame
         trendline = model.predict(x.reshape(-1, 1))
 
         # Plot the trendline
-        axes[i].plot(region_data['quarter_str'], trendline, linestyle='--', color='black', label='Trendline')
+        axes[i].plot(region_data['quarter_str'], trendline, linestyle='--', color='black')
 
         # Label y-axis for each subplot
         axes[i].set_ylabel(f'Sum of Daily Blood Donations')
 
-        # Add title for each subplot and reduce title size
-        axes[i].set_title(f'Total Annualy Blood Donation Trendline - {region}', fontsize=10)
+        # Add title for each subplot and increase title size
+        axes[i].set_title(f'Total Annual Blood Donation Trendline - {region}', fontsize=14)
+
+        # Add grid lines
+        axes[i].grid(True, linestyle='--', alpha=0.7)
 
     # Label x-axis for the last subplot
-    axes[-1].set_xlabel('Quarter', color='black')
+    axes[-1].set_xlabel('Annual-Time-Series', color='black')
 
     # Adjusting x-axis label rotation and font size
     plt.xticks(rotation=60, ha='right', fontsize=8)
 
-    # Show the legend
+    # Remove the legend
     for ax in axes:
-        ax.legend()
+        ax.legend().set_visible(False)
 
-    # Adjust spacing between x-axis labels and the plot
+    # Save the plot with tight layout
+    plt.savefig('trends_2.png', facecolor='w', bbox_inches='tight')
     plt.tight_layout()
-
     # Show the plot
     return plt
-# def visualisation_bar_plot(daily_donation_ingested_processed: pd.DataFrame) -> pd.DataFrame:
-#     # Assuming df_donations_facility is your Pandas DataFrame
-#     # Replace this with your actual DataFrame
-#
-#     # Convert the 'date' column to datetime format for proper sorting
-#     daily_donation_ingested_processed['date'] = pd.to_datetime(daily_donation_ingested_processed['date'])
-#
-#     # Extract year from the 'date' column
-#     daily_donation_ingested_processed['year'] = daily_donation_ingested_processed['date'].dt.year
-#
-#     # Convert 'year' to string
-#     daily_donation_ingested_processed['year_str'] = daily_donation_ingested_processed['year'].astype(str)
-#
-#     # Group by 'year_str' and sum the 'daily' column
-#     df_yearly_sum = daily_donation_ingested_processed.groupby('year_str')['daily'].sum().reset_index()
-#
-#     # Define a pastel red color manually
-#     pastel_red = "#FF9999"
-#
-#     # Bar plot with yearly values on the x-axis
-#     plt.figure(figsize=(12, 6))
-#
-#     # Plot bar for total yearly donations with pastel red color
-#     plt.bar(df_yearly_sum['year_str'], df_yearly_sum['daily'], label='Total blood donors Yearly', color=pastel_red,
-#             alpha=0.7)
-#
-#     # Calculate trend line for total yearly donations
-#     x_values_total = np.arange(len(df_yearly_sum['year_str']))
-#     slope_total, intercept_total = np.polyfit(x_values_total, df_yearly_sum['daily'], 1)
-#     trend_line_total = slope_total * x_values_total + intercept_total
-#     plt.plot(df_yearly_sum['year_str'], trend_line_total, linestyle='--', color='black', alpha=0.5)
-#
-#     # Label x-axis
-#     plt.xlabel('Year', color='black')  # Set the color of x-axis labels to black
-#
-#     # Label y-axis
-#     plt.ylabel('Total Yearly Blood Donations')
-#
-#     # Add title to the plot
-#     plt.title('Total Yearly Blood Donations Over Time', color='black')
-#
-#     # Display legend with a black border and white text
-#     legend = plt.legend()
-#     for text in legend.get_texts():
-#         text.set_color('black')
-#
-#     # Adjusting x-axis label rotation and font size
-#     plt.xticks(rotation=60, ha='right', fontsize=8)
-#
-#     # Adjust spacing between x-axis labels and the plot
-#     plt.tight_layout()
-#
-#     # Show the plot
-#     return plt
+
